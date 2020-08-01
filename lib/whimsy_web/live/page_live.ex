@@ -8,8 +8,7 @@ defmodule WhimsyWeb.PageLive do
       WhimsyWeb.Endpoint.subscribe("tracker")
     end
 
-    {pees, poos} = Tracker.state()
-    {:ok, assign(socket, pees: pees, poos: poos)}
+    {:ok, assign(socket, times: Tracker.state())}
   end
 
   @impl true
@@ -25,11 +24,10 @@ defmodule WhimsyWeb.PageLive do
   end
 
   @impl true
-  def handle_info(%{event: "state", payload: %{state: {pees, poos}}}, socket) do
+  def handle_info(%{event: "state", payload: %{state: times}}, socket) do
     {:noreply,
      assign(socket,
-       pees: pees,
-       poos: poos
+       times: times
      )}
   end
 end
