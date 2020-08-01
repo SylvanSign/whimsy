@@ -7,6 +7,8 @@
 # General application configuration
 use Mix.Config
 
+config :elixir, :time_zone_database, Tzdata.TimeZoneDatabase
+
 # Configures the endpoint
 config :whimsy, WhimsyWeb.Endpoint,
   url: [host: "localhost"],
