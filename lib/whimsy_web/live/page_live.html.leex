@@ -1,0 +1,15 @@
+<h1>Whimsy Bathroom Schedule</h1>
+<button class="button-outline" phx-click="pee">💦</button>
+<button phx-click="poo">💩</button>
+<h2>Pee Times</h2>
+<ul>
+  <%= for pee <- @pees do %>
+    <li><%= pee %></li>
+  <% end %>
+</ul>
+<h2>Poo Times</h2>
+<ul>
+  <%= for poo <- @poos do %>
+    <li><%= poo %></li>
+  <% end %>
+</ul>
