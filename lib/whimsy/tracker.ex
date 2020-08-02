@@ -1,34 +1,58 @@
 defmodule Whimsy.Tracker do
   use Agent
 
+  @list_length 20
+
   def start_link(_opts) do
-    Agent.start_link(fn -> [] end, name: __MODULE__)
+    Agent.start_link(fn -> {0, []} end, name: __MODULE__)
   end
 
-  def state do
-    Agent.get(__MODULE__, & &1)
+  def times do
+    Agent.get(__MODULE__, &elem(&1, 1))
   end
 
   def pee do
-    Agent.update(__MODULE__, fn times ->
-      [now(:pee) | times]
-      |> broadcast_state()
-    end)
+    track(:pee)
   end
 
   def poo do
-    Agent.update(__MODULE__, fn times ->
-      [now(:poo) | times]
+    track(:poo)
+  end
+
+  def meal do
+    track(:meal)
+  end
+
+  def bath do
+    track(:bath)
+  end
+
+  def emergency do
+    track(:emergency)
+  end
+
+  def delete(id_to_delete) do
+    Agent.update(__MODULE__, fn {id, times} ->
+      {id, Enum.reject(times, &(elem(&1, 0) == id_to_delete))}
       |> broadcast_state()
     end)
   end
 
-  defp now(type) do
-    {type, Timex.now("America/New_York")}
+  defp track(action) do
+    Agent.update(__MODULE__, fn {id, times} ->
+      id = id + 1
+
+      {id, [now(id, action) | times] |> Enum.take(@list_length)}
+      |> broadcast_state()
+    end)
   end
 
-  defp broadcast_state(state) do
-    WhimsyWeb.Endpoint.broadcast!("tracker", "state", %{state: state})
-    state
+  defp now(id, type) do
+    {id, type, Timex.now("America/New_York")}
+  end
+
+  defp broadcast_state({id, times}) do
+    WhimsyWeb.Endpoint.broadcast!("tracker", "times", %{times: times})
+    {id, times}
   end
 end

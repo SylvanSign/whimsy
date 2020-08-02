@@ -1,13 +1,34 @@
-<h1>Whimsy Bathroom Schedule</h1>
-<button class="button-outline" phx-click="pee">💦</button>
-<button class="button-outline" phx-click="poo">💩</button>
-<ul>
-  <%= for {type, time} <- @times do %>
+<%
+  emoji_map = %{
+    pee: "💦",
+    poo: "💩",
+    meal: "🍲",
+    bath: "🧼",
+    emergency: "⚠️",
+  }
+%>
+
+<h1>Whimsy Tracker</h1>
+<button class="button-outline" phx-click="pee"><%= emoji_map.pee %></button>
+<button class="button-outline" phx-click="poo"><%= emoji_map.poo %></button>
+<button class="button-outline" phx-click="meal"><%= emoji_map.meal %></button>
+<button class="button-outline" phx-click="bath"><%= emoji_map.bath %></button>
+<button class="button-outline" phx-click="emergency"><%= emoji_map.emergency %></button>
+
+<hr>
+
+<ul style="list-style: none">
+  <%= for {id, type, time} <- @times do %>
     <%
-      emoji = if type == :pee, do: "💦", else: "💩"
-      exact = Timex.format!(time, "{h12}:{m}{am} {WDshort}")
+      emoji = emoji_map[type]
+      exact = Timex.format!(time, "{h12}:{m}{am}, {WDshort} {M}/{D}")
       relative = Timex.format!(time, "{relative}", :relative)
     %>
-    <li><%= "#{emoji} #{exact} (#{relative})" %></li>
+    <li>
+      <a href="" phx-click="delete" phx-value-id="<%= id %>">❌</a>
+      -
+      <%= "#{emoji} #{exact} (#{relative})" %>
+      <hr>
+    </li>
   <% end %>
 </ul>
